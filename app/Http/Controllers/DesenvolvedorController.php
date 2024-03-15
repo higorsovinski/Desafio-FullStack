@@ -8,15 +8,22 @@ use Illuminate\Support\Facades\Validator;
 
 class DesenvolvedorController extends Controller
 {
+
+    public function view()
+    {
+        return view('desenvolvedores');
+    }
+
     public function index()
     {
-        $desenvolvedores = Desenvolvedor::all();
+        $desenvolvedores = Desenvolvedor::with('nivel')->get();
         return response()->json($desenvolvedores, 200);
     }
 
     public function show($id)
     {
-        return Desenvolvedor::findOrFail($id);
+        $desenvolvedor = Desenvolvedor::with('nivel')->findOrFail($id);
+        return response()->json($desenvolvedor, 200);
     }
 
     public function store(Request $request)

@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Nivel;
+use App\Models\Desenvolvedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class NivelController extends Controller
 {
+
+    public function view()
+    {
+        return view('niveis');
+    }
+
     public function index()
     {
         $niveis = Nivel::all();
@@ -56,14 +63,18 @@ class NivelController extends Controller
         }
     }
 
+
     public function destroy($id)
     {
-        try {
-            $nivel = Nivel::findOrFail($id);
-            $nivel->delete();
-            return response()->json(['message' => 'Nível excluído com sucesso.'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Erro ao excluir nível.', 'error' => $e->getMessage()], 500);
+        $nivel = Nivel::findOrFail($id);
+
+        $desenvolvedores = Desenvolvedor::where('nivel_id', $id)->get();
+        if ($desenvolvedores->isNotEmpty()) {
+            return response()->json(['message' => 'Não é possível excluir o nível pois existem desenvolvedores associados a ele.'], 400);
         }
+
+        $nivel->delete();
+        return response()->json(['message' => 'Nível excluído com sucesso.'], 200);
     }
+
 }
